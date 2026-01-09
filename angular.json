@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "5ea69fbc-5134-442e-b8a9-bed8ef4b4a93"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -25,6 +26,7 @@
               }
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/purple-green.css",
               "src/styles.css"
             ]
           },
