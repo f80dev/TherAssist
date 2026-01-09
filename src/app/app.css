@@ -1,0 +1,36 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  background-color: var(--background-color-secondary);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.app-header h1 {
+  flex-grow: 1;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.main-nav {
+  background-color: var(--background-color-secondary);
+  padding: 8px 0;
+}
+
+.main-nav mat-list {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
+.main-nav a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.main-nav a.active {
+  /* Vous pouvez ajouter un style pour le lien actif si vous le souhaitez */
+}

@@ -1,5 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
-@import '@angular/material/prebuilt-themes/purple-green.css';
+
+:root {
+  --background-color: #fafafa;
+  --background-color-secondary: #f0f0f0;
+  --text-color: #212121;
+  --border-color: #ccc;
+}
+
+.dark-theme {
+  --background-color: #121212;
+  --background-color-secondary: #333;
+  --text-color: #ffffff;
+  --border-color: #444;
+}
 
 html, body {
   height: 100%;
@@ -8,9 +21,10 @@ html, body {
 }
 
 body {
-  background-color: #121212;
-  color: #ffffff;
+  background-color: var(--background-color);
+  color: var(--text-color);
   font-family: 'Roboto', sans-serif;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 main {

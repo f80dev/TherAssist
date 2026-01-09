@@ -5,7 +5,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'app-query-list',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, JsonPipe],
+  imports: [CommonModule, HttpClientModule],
   templateUrl: './query-list.component.html',
 })
 export class QueryListComponent implements OnInit {

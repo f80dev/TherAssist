@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && gh-pages -d ./dist/af10/browser --repo https://github.com/f80dev/af10.git -f -t true -b gh-pages -m \\\"update from devnet\\\"\"",
+    "build": "ng build && gh-pages -d ./dist/TherAssist/browser --repo https://github.com/f80dev/TherAssist.git -f -t true -b gh-pages -m \\\"update from devnet\\\"\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -21,7 +21,7 @@
     ]
   },
   "private": true,
-  "packageManager": "npm@10.9.2",
+  "packageManager": "yarn@4.3.1",
   "dependencies": {
     "@angular/common": "^21.0.0",
     "@angular/compiler": "^21.0.0",
@@ -33,7 +33,10 @@
     "tslib": "^2.3.0",
     "@angular/animations": "^21.0.0",
     "@angular/cdk": "^21.0.0",
-    "@angular/material": "^21.0.0"
+    "@angular/material": "^21.0.0",
+    "firebase": "^12.7.0",
+    "@angular/fire": "^20.0.1",
+    "zone.js": "~0.14.0"
   },
   "devDependencies": {
     "@angular/build": "^21.0.4",
