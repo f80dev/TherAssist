@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-query-list',
@@ -12,9 +13,10 @@ export class QueryListComponent implements OnInit {
   isLoading = false;
   error: string | null = null;
   responseData: any | null = null;
+  private authService = inject(AuthService);
 
   // REMPLACEZ CECI PAR L'URL DE VOTRE WEBHOOK
-  private webhookUrl = 'https://n8n.af10.fr:8443/prod/0b011e50-c3ca-4425-ae73-85fa9b00c626';
+  private webhookUrl = 'https://n8n.af10.fr:8443/test/0b011e50-c3ca-4425-ae73-85fa9b00c626';
   private localStorageKey = 'queries';
 
   constructor(private http: HttpClient) {}
@@ -31,8 +33,9 @@ export class QueryListComponent implements OnInit {
     try {
       let queries = localStorage.getItem("queries") || "";
       if(queries.startsWith(","))queries=queries.substring(1)
+      const user_id = this.authService.user()?.uid;
 
-      this.http.post(this.webhookUrl,{queries:queries}).subscribe({
+      this.http.post(this.webhookUrl,{queries:queries, user_id: user_id}).subscribe({
         next: (response) => {
           this.responseData = response;
           this.isLoading = false;

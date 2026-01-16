@@ -15,22 +15,25 @@
 }
 
 .main-nav {
-  background-color: var(--background-color-secondary);
-  padding: 8px 0;
-}
-
-.main-nav mat-list {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  justify-content: center;
-  padding: 0;
+  justify-content: space-around;
+  background-color: var(--background-color-secondary);
+  border-top: 1px solid var(--border-color);
+  padding: 8px 0;
 }
 
 .main-nav a {
   color: var(--text-color);
-  text-decoration: none;
-  font-weight: 500;
 }
 
-.main-nav a.active {
-  /* Vous pouvez ajouter un style pour le lien actif si vous le souhaitez */
+.main-nav a.active-link {
+  color: var(--mat-primary-500, #673ab7); /* Utilise la couleur primaire de Material ou un violet par défaut */
+}
+
+main {
+  padding-bottom: 70px; /* Ajoute un padding pour éviter que le contenu ne soit masqué par la barre de navigation */
 }

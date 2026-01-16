@@ -25,13 +25,13 @@ import { CommonModule } from '@angular/common';
   ],
   template: `
     <header class="app-header">
-      <h1 style="text-align: center;">{{ title() }}</h1>
+      <h1>{{ title() }}</h1>
       <div *ngIf="authService.user() as user; else showLogin">
         <button mat-icon-button (click)="togglePreferences()">
           <mat-icon>settings</mat-icon>
         </button>
-        <button mat-button (click)="logout()">
-          Déconnexion
+        <button mat-icon-button (click)="logout()">
+          <mat-icon>logout</mat-icon>
         </button>
       </div>
       <ng-template #showLogin>
@@ -41,21 +41,19 @@ import { CommonModule } from '@angular/common';
       </ng-template>
     </header>
 
-    <nav class="main-nav" *ngIf="authService.user()">
-      <mat-list role="navigation">
-        <mat-list-item>
-          <a mat-button routerLink="/recorder">Enregistreur</a>
-        </mat-list-item>
-        <mat-list-item>
-          <a mat-button routerLink="/queries">Queries</a>
-        </mat-list-item>
-      </mat-list>
-    </nav>
-
     <main>
       <app-preferences *ngIf="showPreferences()"></app-preferences>
       <router-outlet></router-outlet>
     </main>
+
+    <nav class="main-nav" *ngIf="authService.user()">
+      <a mat-icon-button routerLink="/recorder" routerLinkActive="active-link">
+        <mat-icon>mic</mat-icon>
+      </a>
+      <a mat-icon-button routerLink="/queries" routerLinkActive="active-link">
+        <mat-icon>search</mat-icon>
+      </a>
+    </nav>
 
     <app-cookie-consent></app-cookie-consent>
   `,
@@ -87,6 +85,20 @@ export class App {
   }
 
   private updateTheme(theme: 'light' | 'dark'): void {
+    const head = this.document.head;
+    const themeLink = head.querySelector('#theme-link') as HTMLLinkElement;
+    const themeUrl = `assets/themes/${theme === 'dark' ? 'purple-green' : 'deeppurple-amber'}.css`;
+
+    if (themeLink) {
+      themeLink.href = themeUrl;
+    } else {
+      const newThemeLink = this.document.createElement('link');
+      newThemeLink.id = 'theme-link';
+      newThemeLink.rel = 'stylesheet';
+      newThemeLink.href = themeUrl;
+      head.appendChild(newThemeLink);
+    }
+
     const body = this.document.body;
     body.classList.remove('dark-theme', 'light-theme');
     body.classList.add(`${theme}-theme`);
