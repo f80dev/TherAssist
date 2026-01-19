@@ -5,6 +5,11 @@ import { Unsubscribe } from '@angular/fire/auth';
 
 export type Theme = 'light' | 'dark';
 
+export interface UserProfile {
+  theme: Theme;
+  profession: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -13,53 +18,64 @@ export class PreferencesService {
   private authService: AuthService = inject(AuthService);
   private unsubscribeFromFirestore: Unsubscribe | null = null;
 
-  theme = signal<Theme>('dark');
+  userProfile = signal<UserProfile>({ theme: 'dark', profession: '' });
 
   constructor() {
-    // Réagit aux changements de l'utilisateur (connexion/déconnexion)
     effect(() => {
       const user = this.authService.user();
-
-      // Si un utilisateur est connecté, écoute ses préférences
       if (user) {
+        console.log('[Prefs] Utilisateur détecté:', user.uid);
         const userDocRef = doc(this.firestore, `users/${user.uid}`);
-        this.listenToPreferences(userDocRef);
-        this.saveTheme(this.theme(), userDocRef); // Sauvegarde le thème actuel
+        this.listenToProfile(userDocRef);
       } else {
-        // Si l'utilisateur se déconnecte, arrête d'écouter les changements
+        console.log('[Prefs] Aucun utilisateur, déconnexion de Firestore.');
         if (this.unsubscribeFromFirestore) {
           this.unsubscribeFromFirestore();
         }
-        // Optionnel : réinitialiser à un thème par défaut
-        this.theme.set('dark');
+        this.userProfile.set({ theme: 'dark', profession: '' });
       }
     });
   }
 
-  private listenToPreferences(userDocRef: DocumentReference): void {
-    // Arrête l'écoute précédente pour éviter les fuites mémoire
+  private listenToProfile(userDocRef: DocumentReference): void {
+    console.log('[Prefs] Écoute du profil:', userDocRef.path);
     if (this.unsubscribeFromFirestore) {
       this.unsubscribeFromFirestore();
     }
-
     this.unsubscribeFromFirestore = onSnapshot(userDocRef, (snap) => {
-      const data = snap.data();
-      const newTheme = data && data['theme'] === 'light' ? 'light' : 'dark';
-      this.theme.set(newTheme);
+      if (snap.exists()) {
+        const data = snap.data();
+        console.log('[Prefs] Données reçues de Firestore:', data);
+        this.userProfile.set({
+          theme: data?.['theme'] === 'light' ? 'light' : 'dark',
+          profession: data?.['profession'] || '',
+        });
+      } else {
+        console.log('[Prefs] Le profil n\'existe pas, création avec les valeurs par défaut.');
+        const defaultProfile: UserProfile = { theme: 'dark', profession: '' };
+        setDoc(userDocRef, defaultProfile);
+        this.userProfile.set(defaultProfile);
+      }
     });
   }
 
-  private saveTheme(theme: Theme, userDocRef: DocumentReference): void {
-    setDoc(userDocRef, { theme }, { merge: true });
-  }
-
-  // Méthode publique pour changer le thème
-  setTheme(theme: Theme): void {
-    this.theme.set(theme);
+  private updateProfileInFirestore(profileData: Partial<UserProfile>): void {
     const user = this.authService.user();
     if (user) {
+      console.log('[Prefs] Mise à jour de Firestore avec:', profileData);
       const userDocRef = doc(this.firestore, `users/${user.uid}`);
-      this.saveTheme(theme, userDocRef);
+      setDoc(userDocRef, profileData, { merge: true });
     }
+  }
+
+  setTheme(theme: Theme): void {
+    this.userProfile.update(profile => ({ ...profile, theme }));
+    this.updateProfileInFirestore({ theme });
+  }
+
+  setProfession(profession: string): void {
+    console.log(`[Prefs] Définition du métier (localement): ${profession}`);
+    this.userProfile.update(profile => ({ ...profile, profession }));
+    this.updateProfileInFirestore({ profession });
   }
 }

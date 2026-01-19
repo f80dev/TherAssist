@@ -70,7 +70,7 @@ export class App {
 
   constructor() {
     effect(() => {
-      const theme = this.preferencesService.theme();
+      const theme = this.preferencesService.userProfile().theme;
       this.updateTheme(theme);
     });
   }

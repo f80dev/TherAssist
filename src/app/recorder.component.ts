@@ -1,29 +1,22 @@
-import { Component, OnDestroy, signal, inject } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {CommonModule, NgIf} from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import {MatButton} from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
-import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-recorder',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, NgIf, MatButton, FormsModule],
+  imports: [CommonModule, HttpClientModule, NgIf, MatButton],
   templateUrl: './recorder.component.html',
-  styleUrls: ['./recorder.component.css']
 })
 export class RecorderComponent implements OnDestroy {
   isRecording = false;
   message=""
   audioURL: SafeUrl | null = null;
-  elapsedTime = signal('00:00:00');
-  recordingName = signal('enregistrement');
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private stream: MediaStream | null = null;
-  private timerInterval: any;
-  private authService = inject(AuthService);
 
   // REMPLACEZ CECI PAR L'URL DE VOTRE WEBHOOK N8N
   private n8nWebhookUrl = 'https://n8n.af10.fr:8443/prod/129f4bfe-e6ac-4f47-8bad-0e539a53471f';
@@ -48,7 +41,6 @@ export class RecorderComponent implements OnDestroy {
       };
 
       this.mediaRecorder.start();
-      this.startTimer();
     } catch (err) {
       console.error('Erreur lors de l\'accès au microphone :', err);
       this.isRecording = false;
@@ -60,26 +52,18 @@ export class RecorderComponent implements OnDestroy {
     if (this.mediaRecorder && this.isRecording) {
       this.isRecording = false;
       this.mediaRecorder.stop();
-      this.stopTimer();
     }
   }
 
-  async sendAudio(audio:Blob): Promise<void> {
+  sendAudio(audio:Blob): void {
     console.log('Envoi du fichier audio au webhook...');
-    const query_id = await this.calculateHash(audio);
-    const user_id = this.authService.user()?.uid;
-    const audio_base64 = await this.blobToBase64(audio);
-
-    const data = {
-      query_id: query_id,
-      name: this.recordingName(),
-      user_id: user_id,
-      audio_data: audio_base64
-    };
-
+    const formData = new FormData();
+    const query_id=new Date().getTime().toString(16)
+    // 'audio_file' est la clé (key) que le webhook devra lire
+    formData.append('data', audio, 'enregistrement.wav');
     localStorage.setItem('queries',(localStorage.getItem("queries") || "") +","+query_id)
 
-    this.http.post(this.n8nWebhookUrl, data).subscribe({
+    this.http.post(this.n8nWebhookUrl+"?query_id="+query_id, formData).subscribe({
       next: (response) => {
         console.log('Webhook exécuté avec succès !', response);
         this.message='Enregistrement envoyé avec succès !';
@@ -89,42 +73,6 @@ export class RecorderComponent implements OnDestroy {
         this.message='Échec de l\'envoi de l\'enregistrement.';
       },
     });
-  }
-
-  private blobToBase64(blob: Blob): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
-
-  private async calculateHash(blob: Blob): Promise<string> {
-    const buffer = await blob.arrayBuffer();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  private startTimer(): void {
-    let startTime = Date.now();
-    this.timerInterval = setInterval(() => {
-      const elapsedTime = Date.now() - startTime;
-      const hours = Math.floor(elapsedTime / 3600000);
-      const minutes = Math.floor((elapsedTime % 3600000) / 60000);
-      const seconds = Math.floor((elapsedTime % 60000) / 1000);
-      this.elapsedTime.set(`${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}`);
-    }, 1000);
-  }
-
-  private stopTimer(): void {
-    clearInterval(this.timerInterval);
-    this.elapsedTime.set('00:00:00');
-  }
-
-  private pad(num: number): string {
-    return num.toString().padStart(2, '0');
   }
 
   private stopMediaStream(): void {
