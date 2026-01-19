@@ -114,6 +114,8 @@ export class QueryListComponent implements OnInit {
         delete details.Query_ID;
         delete details.Owner_ID;
         delete details.File;
+        delete details.Date;
+        delete details.Client;
         delete details.Profil;
         delete details.row_number;
         delete details.webhookUrl
@@ -127,7 +129,9 @@ export class QueryListComponent implements OnInit {
       }
 
       for(const k in details) {
-        if(details[k].length=="")delete details[k]
+        if(details[k].length==""){
+          delete details[k]
+        }
       }
 
       // Build the tree for the remaining details
