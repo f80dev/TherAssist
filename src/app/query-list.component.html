@@ -1,47 +1,40 @@
 <div class="query-list-container">
-  <h2>Liste des Queries</h2>
-
-  <div *ngIf="responseData" class="response-container">
-    <div *ngFor="let row of responseData">
-      {{row.Query}} - {{row.Synthese}}
-    </div>
+  <div *ngIf="isLoading()" class="status-message">
+    Chargement des données...
   </div>
+
+  <div *ngIf="error()" class="status-message error">
+    {{ error() }}
+  </div>
+
+  <mat-tree *ngIf="!isLoading() && !error() && dataSource.data.length > 0" [dataSource]="dataSource" [treeControl]="treeControl" class="result-tree">
+    <!-- This is the tree node template for expandable nodes -->
+    <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+      <li>
+        <div class="mat-tree-node">
+          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.key">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          <strong>{{ node.key }}:</strong>
+        </div>
+        <ul [class.tree-invisible]="!treeControl.isExpanded(node)">
+          <ng-container matTreeNodeOutlet></ng-container>
+        </ul>
+      </li>
+    </mat-nested-tree-node>
+
+    <!-- This is the tree node template for leaf nodes -->
+    <mat-tree-node *matTreeNodeDef="let node">
+      <li>
+        <div class="mat-tree-node">
+          <div class="leaf-node">
+            <strong>{{ node.key }}:</strong>
+            <span class="leaf-value">{{ node.value }}</span>
+          </div>
+        </div>
+      </li>
+    </mat-tree-node>
+  </mat-tree>
 </div>
-
-<style>
-  .query-list-container {
-    padding: 20px;
-    border-radius: 8px;
-    margin: 20px auto;
-    width: 100%;
-    max-width: 800px;
-    box-sizing: border-box;
-  }
-
-  .status-message {
-    padding: 15px;
-    border-radius: 5px;
-    background-color: #444;
-    color: #eee;
-    text-align: center;
-  }
-
-  .status-message.error {
-    background-color: #5c2c31;
-    color: #f8d7da;
-    border: 1px solid #f5c6cb;
-  }
-
-  .response-container {
-    margin-top: 20px;
-  }
-
-  pre {
-    background-color: #222;
-    color: #eee;
-    padding: 15px;
-    border-radius: 5px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-</style>

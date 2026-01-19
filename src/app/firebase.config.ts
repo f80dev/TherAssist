@@ -1,11 +1,11 @@
-// REMPLACEZ CECI PAR VOTRE PROPRE CONFIGURATION FIREBASE
-// Vous pouvez la trouver dans votre console Firebase > Paramètres du projet
-
+// This file is intentionally not tracked by git.
+// You should create your own firebase.config.ts file and populate it with your own credentials.
 export const firebaseConfig = {
-  apiKey: "VOTRE_API_KEY",
-  authDomain: "VOTRE_AUTH_DOMAIN",
-  projectId: "VOTRE_PROJECT_ID",
-  storageBucket: "VOTRE_STORAGE_BUCKET",
-  messagingSenderId: "VOTRE_MESSAGING_SENDER_ID",
-  appId: "VOTRE_APP_ID"
+  apiKey: "AIzaSyD2eNxZcsKdFdEKqlpAY9ZfBRVc1cWkbfs",
+  authDomain: "therassist-b96bd.firebaseapp.com",
+  projectId: "therassist-b96bd",
+  storageBucket: "therassist-b96bd.firebasestorage.app",
+  messagingSenderId: "831726805692",
+  appId: "1:831726805692:web:405445c8a87358f8b0e6b9",
+  measurementId: "G-XE842ZVG3W"
 };

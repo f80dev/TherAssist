@@ -1,0 +1,48 @@
+.query-list-container {
+  padding: 20px;
+  margin: 20px auto;
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+}
+
+.status-message {
+  padding: 15px;
+  border-radius: 5px;
+  background-color: var(--background-color-secondary);
+  color: var(--text-color);
+  text-align: center;
+}
+
+.status-message.error {
+  background-color: #5c2c31;
+  color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.result-tree {
+  font-family: monospace;
+  background-color: transparent;
+}
+
+.mat-tree-node, .mat-nested-tree-node {
+  color: var(--text-color);
+  list-style-type: none;
+}
+
+.mat-nested-tree-node ul {
+  padding-left: 40px;
+}
+
+.tree-invisible {
+  display: none;
+}
+
+.leaf-node {
+  padding-left: 40px; /* Align with nested nodes */
+}
+
+.leaf-value {
+  color: var(--mat-accent-500, #ff4081);
+  margin-left: 8px;
+}

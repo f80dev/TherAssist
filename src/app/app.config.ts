@@ -1,22 +1,15 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, APP_INITIALIZER, inject } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideAuth, getAuth } from '@angular/fire/auth';
+import { provideAuth, getAuth, Auth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
-
+import { firebaseConfig } from './firebase.config';
 import { routes } from './app.routes';
-import { firebaseConfig } from './firebase.config'; // Importation ajoutée
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD2eNxZcsKdFdEKqlpAY9ZfBRVc1cWkbfs",
-  authDomain: "therassist-b96bd.firebaseapp.com",
-  projectId: "therassist-b96bd",
-  storageBucket: "therassist-b96bd.firebasestorage.app",
-  messagingSenderId: "831726805692",
-  appId: "1:831726805692:web:405445c8a87358f8b0e6b9",
-  measurementId: "G-XE842ZVG3W"
-};
+export function appInitializerFactory(auth: Auth): () => Promise<any> {
+  return () => auth.authStateReady();
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,5 +18,11 @@ export const appConfig: ApplicationConfig = {
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appInitializerFactory,
+      deps: [Auth],
+      multi: true,
+    },
   ]
 };

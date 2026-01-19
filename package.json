@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --ssl",
     "build": "ng build && gh-pages -d ./dist/TherAssist/browser --repo https://github.com/f80dev/TherAssist.git -f -t true -b gh-pages -m \\\"update from devnet\\\"\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

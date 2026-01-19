@@ -2,9 +2,7 @@ import { Routes } from '@angular/router';
 import { RecorderComponent } from './recorder.component';
 import { QueryListComponent } from './query-list.component';
 import { LoginComponent } from './login.component';
-import { redirectUnauthorizedTo, canActivate } from '@angular/fire/auth-guard';
-
-const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['/login']);
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   {
@@ -16,13 +14,13 @@ export const routes: Routes = [
     path: 'recorder',
     component: RecorderComponent,
     title: 'Enregistreur - TherAssist',
-    ...canActivate(redirectUnauthorizedToLogin)
+    canActivate: [authGuard]
   },
   {
     path: 'queries',
     component: QueryListComponent,
     title: 'Queries - TherAssist',
-    ...canActivate(redirectUnauthorizedToLogin)
+    canActivate: [authGuard]
   },
   {
     path: '',

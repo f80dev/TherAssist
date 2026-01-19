@@ -16,7 +16,7 @@
     <h4>Métier</h4>
     <mat-form-field appearance="fill">
       <mat-label>Votre métier</mat-label>
-      <mat-select [value]="userProfile().profession" (selectionChange)="setProfession($event.value)">
+      <mat-select [(ngModel)]="userProfile().profession" (ngModelChange)="setProfession($event)">
         <mat-option *ngFor="let profession of professions" [value]="profession">
           {{ profession }}
         </mat-option>

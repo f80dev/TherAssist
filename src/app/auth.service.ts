@@ -1,13 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { Auth, signInWithPopup, GoogleAuthProvider, signOut, user, User } from '@angular/fire/auth';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private auth: Auth = inject(Auth);
-  private user$ = user(this.auth);
+  readonly user$: Observable<User | null> = user(this.auth);
 
   // Expose l'utilisateur en tant que Signal
   readonly user = toSignal(this.user$, { initialValue: null as User | null });

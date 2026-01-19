@@ -1,22 +1,26 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, signal } from '@angular/core';
 import {CommonModule, NgIf} from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import {MatButton} from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-recorder',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, NgIf, MatButton],
+  imports: [CommonModule, HttpClientModule, NgIf, MatButton, FormsModule],
   templateUrl: './recorder.component.html',
 })
 export class RecorderComponent implements OnDestroy {
   isRecording = false;
   message=""
   audioURL: SafeUrl | null = null;
+  elapsedTime = signal('00:00:00');
+  recordingName = signal('enregistrement');
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
   private stream: MediaStream | null = null;
+  private timerInterval: any;
 
   // REMPLACEZ CECI PAR L'URL DE VOTRE WEBHOOK N8N
   private n8nWebhookUrl = 'https://n8n.af10.fr:8443/prod/129f4bfe-e6ac-4f47-8bad-0e539a53471f';
@@ -41,6 +45,7 @@ export class RecorderComponent implements OnDestroy {
       };
 
       this.mediaRecorder.start();
+      this.startTimer();
     } catch (err) {
       console.error('Erreur lors de l\'accès au microphone :', err);
       this.isRecording = false;
@@ -52,6 +57,7 @@ export class RecorderComponent implements OnDestroy {
     if (this.mediaRecorder && this.isRecording) {
       this.isRecording = false;
       this.mediaRecorder.stop();
+      this.stopTimer();
     }
   }
 
@@ -73,6 +79,26 @@ export class RecorderComponent implements OnDestroy {
         this.message='Échec de l\'envoi de l\'enregistrement.';
       },
     });
+  }
+
+  private startTimer(): void {
+    let startTime = Date.now();
+    this.timerInterval = setInterval(() => {
+      const elapsedTime = Date.now() - startTime;
+      const hours = Math.floor(elapsedTime / 3600000);
+      const minutes = Math.floor((elapsedTime % 3600000) / 60000);
+      const seconds = Math.floor((elapsedTime % 60000) / 1000);
+      this.elapsedTime.set(`${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}`);
+    }, 1000);
+  }
+
+  private stopTimer(): void {
+    clearInterval(this.timerInterval);
+    this.elapsedTime.set('00:00:00');
+  }
+
+  private pad(num: number): string {
+    return num.toString().padStart(2, '0');
   }
 
   private stopMediaStream(): void {

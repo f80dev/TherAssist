@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal, NgZone } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,6 +7,7 @@ import { CookieConsentComponent } from './cookie-consent.component';
 import { PreferencesComponent } from './preferences.component';
 import { PreferencesService } from './preferences.service';
 import { AuthService } from './auth.service';
+import { TitleService } from './title.service';
 import { DOCUMENT } from '@angular/common';
 import { CommonModule } from '@angular/common';
 
@@ -25,7 +26,7 @@ import { CommonModule } from '@angular/common';
   ],
   template: `
     <header class="app-header">
-      <h1>{{ title() }}</h1>
+      <h1>{{ title() }} &nbsp;-&nbsp;{{ pageTitle() }}</h1>
       <div *ngIf="authService.user() as user; else showLogin">
         <button mat-icon-button (click)="togglePreferences()">
           <mat-icon>settings</mat-icon>
@@ -65,13 +66,18 @@ export class App {
 
   protected authService = inject(AuthService);
   private preferencesService = inject(PreferencesService);
+  private titleService = inject(TitleService);
+  protected pageTitle = this.titleService.pageTitle;
   private document = inject(DOCUMENT);
   private router = inject(Router);
+  private zone = inject(NgZone);
 
   constructor() {
     effect(() => {
-      const theme = this.preferencesService.userProfile().theme;
-      this.updateTheme(theme);
+      this.zone.run(() => {
+        const theme = this.preferencesService.userProfile().theme;
+        this.updateTheme(theme);
+      });
     });
   }
 
